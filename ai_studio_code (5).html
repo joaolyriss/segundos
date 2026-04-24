@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contador Vivo</title>
+    <style>
+        /* MOBILE FIRST & MINIMALISTA */
+        :root {
+            --bg-color: #050505; /* Preto profundo */
+            --text-color: #ffffff; /* Branco puro */
+            --accent-color: #888888; /* Cinza para o texto secundário */
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* O Número Gigante */
+        #contador {
+            font-size: 3.5rem; /* Tamanho ótimo para celular */
+            font-weight: 800; /* Bold */
+            letter-spacing: -2px; 
+            font-variant-numeric: tabular-nums; /* Evita que o número trema ao mudar */
+        }
+
+        /* O Texto Embaixo */
+        .legenda {
+            font-size: 1.2rem;
+            color: var(--accent-color);
+            font-weight: 300;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* ADAPTAÇÃO PARA TELAS MAIORES */
+        @media (min-width: 768px) {
+            #contador {
+                font-size: 6rem; /* Gigante no PC */
+            }
+            .legenda {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Onde o número vai aparecer -->
+        <div id="contador">0</div>
+        <div class="legenda">segundos juntos</div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. CONFIGURAÇÃO DA DATA REAL
+        // ==========================================
+        
+        // Data que se conheceram: 23 de Abril às 12:50
+        // (Ano, Mês [Abril = 3], Dia, Hora, Minuto, Segundo)
+        // ATENÇÃO: Troque o 2023 pelo ano exato em que se conheceram!
+        const dataInicio = new Date(2026, 3, 23, 12, 50, 0); 
+        
+        // Função para calcular os segundos exatos até AGORA (Tempo Real)
+        function calcularSegundosAtuais() {
+            const dataAtual = new Date(); // Pega a data e hora do momento exato
+            
+            // Se o dia ainda não chegou, fica em zero
+            if (dataAtual < dataInicio) return 0;
+
+            const diferencaMilissegundos = dataAtual.getTime() - dataInicio.getTime();
+            return Math.floor(diferencaMilissegundos / 1000); // Converte para segundos
+        }
+
+        // ==========================================
+        // 2. LÓGICA DA ANIMAÇÃO E CONTADOR VIVO
+        // ==========================================
+        
+        const elementoContador = document.getElementById('contador');
+        const totalSegundosAlvo = calcularSegundosAtuais();
+        
+        // Coloca os pontos (ex: 5.391.200)
+        function formatarNumero(numero) {
+            return numero.toLocaleString('pt-BR');
+        }
+
+        // Configuração da animação rápida inicial
+        const duracaoAnimacao = 2500; // 2.5 segundos de animação
+        let inicioAnimacao = null;
+
+        function animarContagem(timestamp) {
+            if (!inicioAnimacao) inicioAnimacao = timestamp;
+            const progresso = timestamp - inicioAnimacao;
+
+            if (progresso < duracaoAnimacao) {
+                const valorAtual = Math.floor((progresso / duracaoAnimacao) * totalSegundosAlvo);
+                elementoContador.innerText = formatarNumero(valorAtual);
+                requestAnimationFrame(animarContagem);
+            } else {
+                // Terminou a animação, começa a bater junto com o relógio
+                iniciarContadorVivo();
+            }
+        }
+
+        function iniciarContadorVivo() {
+            elementoContador.innerText = formatarNumero(calcularSegundosAtuais());
+            
+            // Atualiza de 1 em 1 segundo
+            setInterval(() => {
+                elementoContador.innerText = formatarNumero(calcularSegundosAtuais());
+            }, 1000);
+        }
+
+        // Inicia tudo assim que abrir
+        if (totalSegundosAlvo > 0) {
+            requestAnimationFrame(animarContagem);
+        } else {
+            elementoContador.innerText = "0";
+        }
+
+    </script>
+
+</body>
+</html>
